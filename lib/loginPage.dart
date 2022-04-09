@@ -58,6 +58,7 @@ class _MyCustomFormState extends State<MyCustomForm> {
     return Scaffold(
       body:Column(
         children:[
+          //define email & passwords fields
           TextFormField(
             controller: email,
             decoration: const InputDecoration(
