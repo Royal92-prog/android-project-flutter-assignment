@@ -9,35 +9,6 @@ import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:hello_me2/fireStoreServices.dart';
 
-void isG(String? userId) async{
-  await FirebaseFirestore.instance.collection('users').doc(userId
-      ).get().then((value) => print(value.exists));
-}//Map<String,dynamic> x =
-/*
-class GetUserName extends StatelessWidget {
-  final String documentId;
-
-  GetUserName(this.documentId);
-
-  @override
-  Widget build(BuildContext context) {
-    CollectionReference users = FirebaseFirestore.instance.collection('users');
-
-    return FutureBuilder<DocumentSnapshot>(
-      future: users.doc(documentId).get(),
-      builder:
-          (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          Map<String, dynamic> data = snapshot.data!.data() as Map<String, dynamic>;
-          return Text("Full Name: ${data['full_name']} ${data['last_name']}");
-
-
-      },
-    );
-  }
-}
-*/
-
-Stream documentStream = FirebaseFirestore.instance.collection('users').doc('ABC123').snapshots();
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -112,18 +83,10 @@ class _RandomWordsState extends State<RandomWords> {
     );
   }
 
-  Future<Widget> _buildFavoriteList() {
+  Container _buildFavoriteList() {
     Stream documentStream = FirebaseFirestore.instance.collection('users').doc('ABC123').snapshots();
     print(_currentUser?.uid);
     print("Printing Data");
-    isG(_currentUser?.uid);
-
-
-    /*if(_currentUser != null && loaded == false){
-      //GetUserName
-
-    }*/
-
 
     final tiles = _saved.map(
           (pair) {
@@ -150,7 +113,7 @@ class _RandomWordsState extends State<RandomWords> {
           //print(z[index].title!.toString());
           //print(tiles);
           return Dismissible(
-            confirmDismiss: (DismissDirection horizontal)async {
+            confirmDismiss: (DismissDirection horizontal) {
               /*const snackBar2 = SnackBar(
                 content: Text("Deletion is not implemented yet"),
               );ScaffoldMessenger.of(context).showSnackBar(snackBar2);*/
@@ -222,10 +185,6 @@ class _RandomWordsState extends State<RandomWords> {
           : Center(child: Text('No Items')),
     );
   }
-
-
-
-
 
 
 
@@ -315,7 +274,8 @@ _callbackButton() {//async
                 icon: const Icon(Icons.exit_to_app),
                 onPressed:() async {
                   FirebaseFirestore _firestore = FirebaseFirestore.instance;
-                  await _firestore.collection("Users").doc(_currentUser?.uid).set({'favoriteWords': '_saved'}, SetOptions(merge : true));
+                  await _firestore.collection("Users").doc(_currentUser?.uid).
+                  set({'favoriteWords': '_saved'}, SetOptions(merge : true));
                   await context.read<AuthenticationService>().signOut();
                   setState(() {
                     _currentUser = null;
