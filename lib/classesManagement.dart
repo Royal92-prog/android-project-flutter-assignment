@@ -17,24 +17,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     //final wordPair = WordPair.random(); // Add this line.
     return MultiProvider(
-        providers: [
+      providers: [
         Provider<AuthenticationService>(
-        create: (_) => AuthenticationService(FirebaseAuth.instance),
-    ),
-    StreamProvider(
-    create: (context) => context.read<AuthenticationService>().authStateChanges, initialData: null,
-    )
-    ],
-    child: MaterialApp(
-      title: 'Startup Name Generator',
-      theme: ThemeData(          // Add the 5 lines from here...
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.deepPurple,
-          foregroundColor: Colors.white,
+          create: (_) => AuthenticationService(FirebaseAuth.instance),
         ),
-      ),
-      home: RandomWords(),
-    ),);
+        StreamProvider(
+          create: (context) => context.read<AuthenticationService>().authStateChanges, initialData: null,
+        )
+      ],
+      child: MaterialApp(
+        title: 'Startup Name Generator',
+        theme: ThemeData(          // Add the 5 lines from here...
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.deepPurple,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        home: RandomWords(),
+      ),);
   }
 }
 
@@ -55,7 +55,7 @@ class _RandomWordsState extends State<RandomWords> {
   final _biggerFont = const TextStyle(fontSize: 18); // NEW
   bool _isButtonDisabled = false;//false
   bool isLoggedIn = false;
-  User? _currentUser = null;
+  String? _currentUser = null;
   bool loaded = false;
   Widget _buildRow(WordPair pair) {
     final alreadySaved = _saved.contains(pair);
@@ -84,8 +84,8 @@ class _RandomWordsState extends State<RandomWords> {
   }
 
   Container _buildFavoriteList() {
-    Stream documentStream = FirebaseFirestore.instance.collection('users').doc('ABC123').snapshots();
-    print(_currentUser?.uid);
+    //Stream documentStream = FirebaseFirestore.instance.collection('users').doc('ABC123').snapshots();
+    print(_currentUser);
     print("Printing Data");
 
     final tiles = _saved.map(
@@ -117,7 +117,7 @@ class _RandomWordsState extends State<RandomWords> {
               /*const snackBar2 = SnackBar(
                 content: Text("Deletion is not implemented yet"),
               );ScaffoldMessenger.of(context).showSnackBar(snackBar2);*/
-               return showDialog(
+              return showDialog(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
@@ -189,6 +189,7 @@ class _RandomWordsState extends State<RandomWords> {
 
 
   void _pushSaved() async {
+
     Navigator.of(context).push(
       // Add lines from here...
       MaterialPageRoute<void>(
@@ -200,7 +201,10 @@ class _RandomWordsState extends State<RandomWords> {
             appBar: AppBar(
               title: const Text('Saved Suggestions'),
             ),
-            body: _buildFavoriteList(),);},//ListView(children: divided)
+            body: _buildFavoriteList(),);
+          //return GetUserName(_currentUser);
+
+        },//ListView(children: divided)
       ),);
   }
 
@@ -212,30 +216,30 @@ class _RandomWordsState extends State<RandomWords> {
 
 
   void _pushSaved2() async{
-    User? result = await Navigator.push(context,
-        MaterialPageRoute(
+    String? result = await Navigator.push(context,
+      MaterialPageRoute(
         builder:(context) {
           return Scaffold(
-              appBar: AppBar(
-                title: const Text('Login'),
-                centerTitle: true,
-              ),
+            appBar: AppBar(
+              title: const Text('Login'),
+              centerTitle: true,
+            ),
             body:logInPage(_savedList),);
 
-          },),);
+        },),);
 
-      setState (() {
-        _currentUser = result;
+    setState (() {
+      _currentUser = result;
 
-        _saved = <WordPair>{};
-      });}
+      _saved = <WordPair>{};
+    });}
 
-_callbackButton() {//async
-  _isButtonDisabled = true;
-  Navigator.pop(context);
+  _callbackButton() {//async
+    _isButtonDisabled = true;
+    Navigator.pop(context);
 
-  _isButtonDisabled = false;
-}
+    _isButtonDisabled = false;
+  }
 
 
   Widget _buildSuggestions() {
@@ -273,9 +277,9 @@ _callbackButton() {//async
               _currentUser != null ? IconButton(
                 icon: const Icon(Icons.exit_to_app),
                 onPressed:() async {
-                  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+                  /*FirebaseFirestore _firestore = FirebaseFirestore.instance;
                   await _firestore.collection("Users").doc(_currentUser?.uid).
-                  set({'favoriteWords': '_saved'}, SetOptions(merge : true));
+                  set({'favoriteWords': '_saved'}, SetOptions(merge : true));*/
                   await context.read<AuthenticationService>().signOut();
                   setState(() {
                     _currentUser = null;
@@ -286,9 +290,9 @@ _callbackButton() {//async
                 },
                 tooltip: 'login',
               ) : IconButton(
-    icon: const Icon(Icons.login),
-    onPressed: _pushSaved2,
-    tooltip: 'login',),
+                icon: const Icon(Icons.login),
+                onPressed: _pushSaved2,
+                tooltip: 'login',),
             ]
           // ... to here
         ),

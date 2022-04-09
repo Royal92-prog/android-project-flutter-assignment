@@ -15,23 +15,20 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _initialization,
-        builder: (context, snapshot) {
-      if (snapshot.hasError) {
-        return Scaffold(
-            body: Center(
-                child: Text(snapshot.error.toString(),
-                    textDirection: TextDirection.ltr)));
-      }
-      if (snapshot.connectionState == ConnectionState.done) {
-        return MyApp();
-      }
-      return Center(child: CircularProgressIndicator());
-        },
+      future: _initialization,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Scaffold(
+              body: Center(
+                  child: Text(snapshot.error.toString(),
+                      textDirection: TextDirection.ltr)));
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+          return MyApp();
+        }
+        return Center(child: CircularProgressIndicator());
+      },
     );
 
   }
 }
-
-
-
