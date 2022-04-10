@@ -57,36 +57,53 @@ class _MyCustomFormState extends State<MyCustomForm> {
     // print(this._savedWords);
     return Scaffold(
       body:Column(
-        children:[
+
+        children:[SizedBox( height: 20.0, ),
           //define email & passwords fields
+         Text("Welcome to startup Names Generator, please log in \n below",
+         style: TextStyle(fontSize: 16,fontStyle: FontStyle.italic,fontWeight: FontWeight.w400),),
+
+          SizedBox( height: 15.0, ),
           TextFormField(
             controller: email,
+            cursorColor: Colors.deepPurple,
             decoration: const InputDecoration(
                 enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.deepPurple),),
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(2.0),
+                    topRight: Radius.circular(2.0),
+                  ),
+                  borderSide: BorderSide(width:0.5,style: BorderStyle.solid),),
                 focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.deepPurple),),
+                  borderSide: BorderSide(style: BorderStyle.solid),),
                 contentPadding: EdgeInsets.zero,
-                border: UnderlineInputBorder(),
-                labelText:'email',
+                border: UnderlineInputBorder(borderSide: BorderSide(style: BorderStyle.solid)),
+                labelText:'  Email',
                 labelStyle: TextStyle(
-                  color: Colors.deepPurple,)),),
+                 color: Colors.black,)
+          ),),
+          SizedBox( height: 15.0, ),
 
           TextFormField(
             controller: password,
+            cursorColor: Colors.deepPurple,
             obscureText: true,
             decoration: const InputDecoration(
               enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.deepPurple),),
               focusedBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.deepPurple),),
-              border: UnderlineInputBorder(),
-              labelText: 'password',contentPadding: EdgeInsets.zero,
+              border: OutlineInputBorder(),//UnderlineInputBorder(),
+              labelText: 'Password',contentPadding: EdgeInsets.zero,
               labelStyle: TextStyle(
                 color: Colors.deepPurple,),),),
+          SizedBox( height: 15.0, ),
 
           ButtonTheme(
-            child: ElevatedButton(
+            child: SizedBox(
+              width: 270,
+              height: 30,
+              child:ElevatedButton(
               onPressed: alreadyPressed ? null :() async {
                 print(alreadyPressed);
                 setState(() {
@@ -123,11 +140,11 @@ class _MyCustomFormState extends State<MyCustomForm> {
               style: ElevatedButton.styleFrom(
                 primary: Colors.deepPurple, // background
                 onPrimary: Colors.white, // foreground
-              ),),
+              ),),),
             //minWidth: 290.0,
             //height: 20.0,
             shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-          ),],),);}
+          ),],), );}
 
 
 }

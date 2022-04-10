@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final wordPair = WordPair.random(); // Add this line.
     return MultiProvider(
       providers: [
         Provider<AuthenticationService>(
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
         title: 'Startup Name Generator',
-        theme: ThemeData(          // Add the 5 lines from here...
+        theme: ThemeData(
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.deepPurple,
             foregroundColor: Colors.white,
@@ -53,10 +52,10 @@ class _RandomWordsState extends State<RandomWords> {
   var _saved = <WordPair>{};
   var _savedList =[];
   final _biggerFont = const TextStyle(fontSize: 18); // NEW
-  bool _isButtonDisabled = false;//false
   bool isLoggedIn = false;
   String? _currentUser = null;
   bool loaded = false;
+
   Widget _buildRow(WordPair pair) {
 
     final alreadySaved = _saved.contains(pair);
@@ -107,32 +106,38 @@ class _RandomWordsState extends State<RandomWords> {
           ? ListView.builder(
         itemCount: divided.length,
         itemBuilder: (BuildContext context, int index) {
-          //print(z[index].title!.toString());
-          //print(tiles);
           return Dismissible(
             confirmDismiss: (DismissDirection horizontal) {
-              /*const snackBar2 = SnackBar(
-                content: Text("Deletion is not implemented yet"),
-              );ScaffoldMessenger.of(context).showSnackBar(snackBar2);*/
               return showDialog(
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      title: const Text('Konfirmasi'),
+                      title: const Text('Delete Suggestion'),
                       content: Text('are you sure you want to delete ${allKept[index]} from your saved suggestions?'),
                       actions: [
                         TextButton(
                           onPressed: () {
-                            //_saved.remove(tiles[allKept[index]]);
                             Navigator.of(context).pop(true);
-                          },
+                            setState(() {
+                              _saved.remove(allKept[index]);
+                              _savedList.remove(allKept[index].asSnakeCase);
+                            });
+                          }, style: TextButton.styleFrom(
+                          primary: Colors.white,
+                          backgroundColor: Colors.deepPurple,
+
+                        ),
                           child: const Text('Yes'),
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.of(context).pop(true);
+                            Navigator.of(context).pop(false);
                           },
                           child: const Text('no'),
+                            style: TextButton.styleFrom(
+                              primary: Colors.white,
+                              backgroundColor: Colors.deepPurple,
+                            ),
                         )
                       ],
                     );
@@ -174,21 +179,13 @@ class _RandomWordsState extends State<RandomWords> {
                     ),
                   ],
                 ),
-              ),),
-
-          );
-        },
-      )
-          : Center(child: Text('No Items')),
-    );
+              ),),);},)
+          : Center(child: Text('No Items')),);
   }
 
 
-
   void _pushSaved() async {
-
     Navigator.of(context).push(
-      // Add lines from here...
       MaterialPageRoute<void>(
         builder: (context) {
           print("Line 191");
@@ -199,17 +196,9 @@ class _RandomWordsState extends State<RandomWords> {
               title: const Text('Saved Suggestions'),
             ),
             body: _buildFavoriteList(),);
-          //return GetUserName(_currentUser);
-
-        },//ListView(children: divided)
+        },
       ),);
   }
-
-
-
-
-
-
 
 
   void _pushSaved2() async{
@@ -227,15 +216,12 @@ class _RandomWordsState extends State<RandomWords> {
     print(result);
     var cloudWords =  await FirebaseFirestore.instance.collection('Users').doc(result).
     get().then((querySnapshot) {return querySnapshot.data();});
-    //print(_saved);
     setState (() {
       _currentUser = result;
-      print("line 235");
-      print(_saved.runtimeType);
-      print(cloudWords);
-      //_suggestions = cloudWords!['favorites'] + _suggestions;
-
-      _savedList = _savedList + cloudWords!['favorites'];
+      if(result != null){
+      if(cloudWords != null) {
+        _savedList = _savedList + cloudWords['favorites'];
+      }
       _savedList = _savedList.toSet().toList();
       for(int i = 0; i < _savedList.length; i++){
         String temp = _savedList[i].toString();
@@ -251,15 +237,7 @@ class _RandomWordsState extends State<RandomWords> {
           _saved.add(tempWord);
         }
       }
-    });}
-
-  _callbackButton() {//async
-    _isButtonDisabled = true;
-    Navigator.pop(context);
-
-    _isButtonDisabled = false;
-  }
-
+    }});}
 
   Widget _buildSuggestions() {
     return ListView.builder(
@@ -267,7 +245,6 @@ class _RandomWordsState extends State<RandomWords> {
         if (i.isOdd) {
           return const Divider();
         }
-
         final index = i ~/ 2;
         if (index>= _suggestions.length) {//index
           _suggestions.addAll(generateWordPairs().take(10));
@@ -281,12 +258,9 @@ class _RandomWordsState extends State<RandomWords> {
 
 
   Widget build(BuildContext context) {
-    //final wordPair = WordPair.random(); remove1
-    //return Text(wordPair.asPascalCase); remove2
-    return Scaffold (                     // Add from here...
+    return Scaffold (
         appBar: AppBar(
             title: const Text('Startup Name Generator'),
-            // Add from here ...
             actions: [
               IconButton(
                 icon: const Icon(Icons.list),
@@ -296,9 +270,6 @@ class _RandomWordsState extends State<RandomWords> {
               _currentUser != null ? IconButton(
                 icon: const Icon(Icons.exit_to_app),
                 onPressed:() async {
-                  /*FirebaseFirestore _firestore = FirebaseFirestore.instance;
-                  await _firestore.collection("Users").doc(_currentUser?.uid).
-                  set({'favoriteWords': '_saved'}, SetOptions(merge : true));*/
                   FirebaseFirestore _firestore = FirebaseFirestore.instance;
                   await context.read<AuthenticationService>().signOut();
                   _savedList.remove("pot_form");
@@ -309,6 +280,7 @@ class _RandomWordsState extends State<RandomWords> {
                   await _firestore.collection('Users').doc(_currentUser).set(data,SetOptions(merge : false));
                   setState(() {
                     _currentUser = null;
+                    _savedList = [];
                     _saved = <WordPair>{};
                   });
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -319,11 +291,7 @@ class _RandomWordsState extends State<RandomWords> {
                 icon: const Icon(Icons.login),
                 onPressed: _pushSaved2,
                 tooltip: 'login',),
-            ]
-          // ... to here
-        ),
-        body:_buildSuggestions()//Column(children:[_buildSuggestions(),_enableDismiss()])
-    );                                      // ... to here.
+            ]),
+        body:_buildSuggestions());                                      // ... to here.
   }
-
 }
