@@ -49,7 +49,7 @@ class RandomWords extends StatefulWidget {
 
 class _RandomWordsState extends State<RandomWords> {
   @override
-  final _suggestions = <WordPair>[];
+  var _suggestions = <WordPair>[];
   var _saved = <WordPair>{};
   var _savedList =[];
   final _biggerFont = const TextStyle(fontSize: 18); // NEW
@@ -58,6 +58,7 @@ class _RandomWordsState extends State<RandomWords> {
   String? _currentUser = null;
   bool loaded = false;
   Widget _buildRow(WordPair pair) {
+
     final alreadySaved = _saved.contains(pair);
     return ListTile(
       title: Text(
@@ -73,10 +74,10 @@ class _RandomWordsState extends State<RandomWords> {
         setState(() {
           if (alreadySaved) {
             _saved.remove(pair);
-            _savedList.remove(pair.asString);
+            _savedList.remove(pair.asSnakeCase);
           } else {
             _saved.add(pair);
-            _savedList.add(pair.asString);
+            _savedList.add(pair.asSnakeCase);
           }
         });
       },               // ... to here.
@@ -84,10 +85,6 @@ class _RandomWordsState extends State<RandomWords> {
   }
 
   Container _buildFavoriteList() {
-    //Stream documentStream = FirebaseFirestore.instance.collection('users').doc('ABC123').snapshots();
-    print(_currentUser);
-    print("Printing Data");
-
     final tiles = _saved.map(
           (pair) {
         return ListTile(
@@ -227,11 +224,33 @@ class _RandomWordsState extends State<RandomWords> {
             body:logInPage(_savedList),);
 
         },),);
-
+    print(result);
+    var cloudWords =  await FirebaseFirestore.instance.collection('Users').doc(result).
+    get().then((querySnapshot) {return querySnapshot.data();});
+    //print(_saved);
     setState (() {
       _currentUser = result;
+      print("line 235");
+      print(_saved.runtimeType);
+      print(cloudWords);
+      //_suggestions = cloudWords!['favorites'] + _suggestions;
 
-      _saved = <WordPair>{};
+      _savedList = _savedList + cloudWords!['favorites'];
+      _savedList = _savedList.toSet().toList();
+      for(int i = 0; i < _savedList.length; i++){
+        String temp = _savedList[i].toString();
+        var tempList = temp.split('_');
+        String first = tempList[0];
+        String second = tempList[1];
+        WordPair tempWord = WordPair(first, second);
+        if(!_suggestions.contains(tempWord)){
+          _suggestions.insert(0,tempWord);
+        }
+        if(!_saved.contains(tempWord)){
+          print("Line 248");
+          _saved.add(tempWord);
+        }
+      }
     });}
 
   _callbackButton() {//async
@@ -280,7 +299,14 @@ class _RandomWordsState extends State<RandomWords> {
                   /*FirebaseFirestore _firestore = FirebaseFirestore.instance;
                   await _firestore.collection("Users").doc(_currentUser?.uid).
                   set({'favoriteWords': '_saved'}, SetOptions(merge : true));*/
+                  FirebaseFirestore _firestore = FirebaseFirestore.instance;
                   await context.read<AuthenticationService>().signOut();
+                  _savedList.remove("pot_form");
+                  _savedList.remove("tour_math");
+                  _savedList.remove("shell_math");
+                  Map<String, dynamic> data = {"favorites":FieldValue.arrayUnion(_savedList)};
+                  _firestore = FirebaseFirestore.instance;
+                  await _firestore.collection('Users').doc(_currentUser).set(data,SetOptions(merge : false));
                   setState(() {
                     _currentUser = null;
                     _saved = <WordPair>{};

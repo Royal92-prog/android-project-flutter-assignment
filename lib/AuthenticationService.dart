@@ -19,11 +19,11 @@ class AuthenticationService {
       Map<String, dynamic> data = {"favorites":FieldValue.arrayUnion(savedWords)};
       _firestore = FirebaseFirestore.instance;
 
-      print("Line 58");
-      await _firestore.collection('Users').doc(email.toString()).set(data,SetOptions(merge : true));
-      print('line32');
-      await FirebaseFirestore.instance.collection('Users').doc(email.toString()).
-      get().then((querySnapshot) {return querySnapshot.data();});
+
+      //await _firestore.collection('Users').doc(email.toString()).set(data,SetOptions(merge : true));
+
+      //await FirebaseFirestore.instance.collection('Users').doc(email.toString()).
+      //get().then((querySnapshot) {return querySnapshot.data();});
 
       return _firebaseAuth.currentUser;
 
