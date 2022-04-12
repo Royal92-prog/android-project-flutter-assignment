@@ -2,7 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_me2/classesManagement.dart';
+import 'package:Hw3/classesManagement.dart';
 import 'package:provider/provider.dart';
 Future <void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
