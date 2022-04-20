@@ -1,13 +1,13 @@
+import 'dart:ffi';
+
+import 'package:Hw3/screens/homeScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
-import 'package:Hw3/loginPage.dart';
 import 'package:Hw3/AuthenticationService.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
-
-
+import 'package:Hw3/screens/userMode.dart';
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -18,25 +18,103 @@ class MyApp extends StatelessWidget {
         Provider<AuthenticationService>(
           create: (_) => AuthenticationService(FirebaseAuth.instance),
         ),
+        ChangeNotifierProvider<currentUser>(
+          create: (_) => currentUser(),
+        ),
         StreamProvider(
           create: (context) => context.read<AuthenticationService>().authStateChanges, initialData: null,
         )
       ],
       child: MaterialApp(
         title: 'Startup Name Generator',
+
         theme: ThemeData(
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.deepPurple,
             foregroundColor: Colors.white,
           ),
         ),
-        home: RandomWords(),
+        home: modesWrapper()//RandomWords(),
       ),);
   }
 }
 
+class currentUser with ChangeNotifier {
+  String? userEmail = null;
 
-class RandomWords extends StatefulWidget {
+  void setUser(String val) {
+    userEmail = val;
+    notifyListeners();
+  }
+}
+
+class modesWrapper extends StatefulWidget{
+  modesWrapper({Key? key}) : super(key: key);
+  var _wordsSuggestions = <WordPair>[];
+  var _savedWords = <WordPair>{};
+  var _savedList = [];
+  String? _currentUser = null;
+
+  @override
+  State<modesWrapper> createState() => _modesWrapperState();
+}
+
+
+class _modesWrapperState extends State<modesWrapper> {
+
+  @override
+  Widget build(BuildContext context) {
+    var user = Provider.of<currentUser>(context, listen: true);
+    return Container(
+        color: Colors.white,
+        child: user.userEmail == null
+            ? homeScreen(updateFsFunc : updateData, updateFunc : updateVariables,
+            savedWords : widget._savedWords, email : widget._currentUser, wordsSuggestions: widget._wordsSuggestions,
+            savedList: widget._savedList)
+            : userModeScreen(updateFsFunc: updateData, email: widget._currentUser.toString())
+    );/*
+      if(widget._currentUser == null){
+//setState() or markNeedsBuild() called during build.
+        return homeScreen(updateFsFunc : updateData, updateFunc : updateVariables,
+            savedWords : widget._savedWords, email : widget._currentUser, wordsSuggestions: widget._wordsSuggestions,
+            savedList: widget._savedList);
+        /*
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ( ),),);*/
+      }
+      return userModeScreen(updateFsFunc: updateData, email: widget._currentUser.toString());
+*/
+  }
+
+  updateData(email) async{
+    if(email == null) return;
+    FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    Map<String, dynamic> data = {"favorites":FieldValue.arrayUnion(widget._savedList)};
+    _firestore = FirebaseFirestore.instance;
+    await _firestore.collection('Users').doc(email).set(data,SetOptions(merge : false));
+  }
+
+  updateVariables(val1, val2, val3){
+    print('kalimer');
+
+    widget._savedList = val1;
+    widget._savedWords = val2;
+    widget._wordsSuggestions = val3;
+}
+
+
+}
+
+
+
+/*
+
+
+
+
+
+class RandomWords extends StatefulWidget{
   const RandomWords({Key? key}) : super(key: key);
 
   @override
@@ -51,17 +129,30 @@ class _RandomWordsState extends State<RandomWords> {
   var _savedList =[];
   final _biggerFont = const TextStyle(fontSize: 18); // NEW
   bool isLoggedIn = false;
-  String? _currentUser = null;
+  String? _currentUser = 'kalamari';
   bool loaded = false;
-
+  bool p = true;
 
   void updateData() async{
+    if(_currentUser == null) return;
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
     Map<String, dynamic> data = {"favorites":FieldValue.arrayUnion(_savedList)};
     _firestore = FirebaseFirestore.instance;
     await _firestore.collection('Users').doc(_currentUser).set(data,SetOptions(merge : false));
   }
 
+  variablesUpdate(listVar, setVar) {
+    setState(() {
+      _savedList = listVar;
+      _saved = setVar;
+    });
+  }
+
+  statusUpdate(val){
+    print(p);
+    p = val;
+    print(p);
+  }
   Widget _buildRow(WordPair pair) {
 
     final alreadySaved = _saved.contains(pair);
@@ -70,7 +161,7 @@ class _RandomWordsState extends State<RandomWords> {
         pair.asPascalCase,
         style: _biggerFont,
       ),
-      trailing: Icon(     // NEW from here...
+      trailing: Icon(
         alreadySaved ? Icons.star : Icons.star_border,
         color: alreadySaved ? Colors.deepPurple : null,
         semanticLabel: alreadySaved ? 'Remove from saved' : 'Save',
@@ -80,133 +171,29 @@ class _RandomWordsState extends State<RandomWords> {
           if (alreadySaved) {
             _saved.remove(pair);
             _savedList.remove(pair.asSnakeCase);
-          } else {
+          }
+          else {
             _saved.add(pair);
             _savedList.add(pair.asSnakeCase);
-          }
-        });
-        //FirebaseFirestore _firestore = FirebaseFirestore.instance;
-        //Map<String, dynamic> data = {"favorites":FieldValue.arrayUnion(_savedList)};
-        //_firestore = FirebaseFirestore.instance;
-        //await _firestore.collection('Users').doc(_currentUser).set(data,SetOptions(merge : false));
+          }});
         updateData();
-      },               // ... to here.
-    );
-  }
-
-  Container _buildFavoriteList() {
-    final tiles = _saved.map(
-          (pair) {
-        return ListTile(
-          title: Text(
-            pair.asPascalCase,
-            style: _biggerFont,
-          ),
-        );
-      },
-    );
-    final allKept = _saved.toList();
-    final divided = tiles.isNotEmpty
-        ? ListTile.divideTiles(
-      context: context,
-      tiles: tiles,
-    ).toList(): <Widget>[];
-
-    return Container(
-      child: divided.length > 0
-          ? ListView.builder(
-        itemCount: divided.length,
-        itemBuilder: (BuildContext context, int index) {
-          return Dismissible(
-            confirmDismiss: (DismissDirection horizontal) {
-              return showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('Delete Suggestion'),
-                      content: Text('are you sure you want to delete ${allKept[index]} from your saved suggestions?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(true);
-                            setState(() {
-                              _saved.remove(allKept[index]);
-                              _savedList.remove(allKept[index].asSnakeCase);
-                            });
-                            updateData();
-                          }, style: TextButton.styleFrom(
-                          primary: Colors.white,
-                          backgroundColor: Colors.deepPurple,
-
-                        ),
-                          child: const Text('Yes'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).pop(false);
-                          },
-                          child: const Text('no'),
-                          style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            backgroundColor: Colors.deepPurple,
-                          ),
-                        )
-                      ],
-                    );
-                  });
-            },
-            background: Container(
-              color: Colors.deepPurple,
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                    Text('Delete Suggestion',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),),
-            child: divided[index],
-            key: UniqueKey(),
-            direction: DismissDirection.horizontal,
-            secondaryBackground: Container(
-              color: Colors.deepPurple,
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Icon(
-                      Icons.delete,
-                      color: Colors.white,
-                    ),
-                    Text('Delete Suggestion',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ],
-                ),
-              ),),);},)
-          : Center(child: Text('No Items')),);
-  }
+      },);}
 
 
   void _pushSaved() async {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
+          bool _lightIsOn = false;
+          //bool p =false;
+          double y = 100;
           return Scaffold(
             appBar: AppBar(
               title: const Text('Saved Suggestions'),
             ),
-            body: _buildFavoriteList(),);
-        },
-      ),);
+            body: p?userModeScreen(updateFsFunc:statusUpdate,email: this._currentUser.toString(),):userModeScreen(
+                updateFsFunc:statusUpdate,email: this._currentUser.toString(),)
+          );},),);
   }
 
 
@@ -254,7 +241,7 @@ class _RandomWordsState extends State<RandomWords> {
           return const Divider();
         }
         final index = i ~/ 2;
-        if (index>= _suggestions.length) {//index
+        if (index >= _suggestions.length) {//index
           _suggestions.addAll(generateWordPairs().take(10));
         }
         return _buildRow(_suggestions[index]);//
@@ -278,11 +265,6 @@ class _RandomWordsState extends State<RandomWords> {
               _currentUser != null ? IconButton(
                 icon: const Icon(Icons.exit_to_app),
                 onPressed:() async {
-                  //FirebaseFirestore _firestore = FirebaseFirestore.instance;
-                  //await context.read<AuthenticationService>().signOut();
-                  //Map<String, dynamic> data = {"favorites":FieldValue.arrayUnion(_savedList)};
-                  //_firestore = FirebaseFirestore.instance;
-                  //await _firestore.collection('Users').doc(_currentUser).set(data,SetOptions(merge : false));
                   setState(() {
                     _currentUser = null;
                     _savedList = [];
@@ -297,6 +279,7 @@ class _RandomWordsState extends State<RandomWords> {
                 onPressed: _pushSaved2,
                 tooltip: 'login',),
             ]),
-        body:_buildSuggestions());                                      // ... to here.
+        body:_currentUser != null ? userModeScreen(updateFsFunc: statusUpdate, email: _currentUser.toString()):
+        _buildSuggestions(),);                                     // ... to here.
   }
-}
+}*/
