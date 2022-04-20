@@ -13,9 +13,15 @@ import 'package:snapping_sheet/snapping_sheet.dart';
 
 
 class userModeScreen extends StatefulWidget {
-   userModeScreen({required this.updateFsFunc, required this.email});
+   userModeScreen({required this.updateFsFunc, required this.email, required this.savedWords}){
+     print("user is:: Line 16 ::   ");
+     print(this.email);
+     print('words:: ');
+    print(this.savedWords);
+   }
   final Function updateFsFunc;
   String email;
+  var savedWords;
 
   @override
   State<userModeScreen> createState() => userModeStates();

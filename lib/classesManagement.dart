@@ -71,7 +71,9 @@ class _modesWrapperState extends State<modesWrapper> {
             ? homeScreen(updateFsFunc : updateData, updateFunc : updateVariables,
             savedWords : widget._savedWords, email : widget._currentUser, wordsSuggestions: widget._wordsSuggestions,
             savedList: widget._savedList)
-            : userModeScreen(updateFsFunc: updateData, email: widget._currentUser.toString())
+            : userModeScreen(
+              updateFsFunc: updateData, email: user.userEmail.toString(), savedWords: widget._savedWords)
+
     );/*
       if(widget._currentUser == null){
 //setState() or markNeedsBuild() called during build.
@@ -90,6 +92,8 @@ class _modesWrapperState extends State<modesWrapper> {
   updateData(email) async{
     if(email == null) return;
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    print("line 95 widget.savedwords is:: ");
+    print(widget._savedList);
     Map<String, dynamic> data = {"favorites":FieldValue.arrayUnion(widget._savedList)};
     _firestore = FirebaseFirestore.instance;
     await _firestore.collection('Users').doc(email).set(data,SetOptions(merge : false));

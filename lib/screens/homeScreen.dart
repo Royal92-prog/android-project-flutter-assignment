@@ -12,7 +12,9 @@ class homeScreen extends StatefulWidget{
   var wordsSuggestions;
   var savedList;
   homeScreen({required this.updateFsFunc, required this.updateFunc, required this.email, required this.savedWords,
-    required this.wordsSuggestions, required this.savedList} );
+    required this.wordsSuggestions, required this.savedList} ){
+    print("user is:: Line 16 ::   ");
+    print(this.email);}
 
   @override
   State<homeScreen> createState() => _homeScreenState();
@@ -76,7 +78,7 @@ class _homeScreenState extends State<homeScreen> {
   }
 
   void _pushLogin() async{
-    String? result = await Navigator.push(context,
+   await Navigator.push(context,
       MaterialPageRoute(
         builder:(context) {
           return Scaffold(
@@ -124,6 +126,6 @@ class _homeScreenState extends State<homeScreen> {
               tooltip: 'login',),
           ]),
       body:_buildSuggestions(),
-    bottomSheet: Container(color: Colors.green,),);                                     // ... to here.
+    );                                     // ... to here.
   }
 }
