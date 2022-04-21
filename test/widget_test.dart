@@ -5,7 +5,7 @@
 // gestures. You can also use WidgetTester to find child classes in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
-import 'package:Hw3/classesManagement.dart';
+import 'package:Hw3/classes/modeWrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 void main() {

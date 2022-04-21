@@ -1,20 +1,20 @@
-import 'package:Hw3/classesManagement.dart';
+import 'package:Hw3/classes/modeWrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:Hw3/AuthenticationService.dart';
-import 'package:Hw3/Modal.dart';
+import 'package:Hw3/classes/AuthenticationService.dart';
+import 'package:Hw3/classes/bottomModal.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:english_words/english_words.dart';
 
 
-class  logInPage extends StatefulWidget {
+class  logInScreen extends StatefulWidget {
   final Function updateFunc;
   final Function updateFsFunc;
   var savedWords;
   var wordsSuggestions;
   var savedList;
-   logInPage({ required this.updateFunc, required this.savedWords,
+  logInScreen({ required this.updateFunc, required this.savedWords,
     required this.wordsSuggestions, required this.savedList, required this.updateFsFunc});
 
   @override
@@ -22,7 +22,7 @@ class  logInPage extends StatefulWidget {
 }
 
 
-class _logInPageState extends State<logInPage> {
+class _logInPageState extends State<logInScreen> {
   final email = TextEditingController();
   final password = TextEditingController();
   bool alreadyPressed = false;
@@ -85,7 +85,7 @@ class _logInPageState extends State<logInPage> {
                 });
                 User? _user = await context.read<AuthenticationService>().signIn(email: email.text.trim(), password: password.text.trim(),);
                 if (_user != null) {
-                  var userEmail = Provider.of<currentUser>(context, listen: false);
+                  var userEmail = await Provider.of<currentUser>(context, listen: false);
                   userEmail.setUser(email.text);
                   var cloudWords =  await FirebaseFirestore.instance.collection('Users').doc(userEmail.userEmail).
                   get().then((querySnapshot) {return querySnapshot.data();});
@@ -105,6 +105,7 @@ class _logInPageState extends State<logInPage> {
                         widget.savedWords.add(tempWord);
                       }
                     }
+                    print("line 108");
                     widget.updateFunc(widget.savedList,widget.savedWords,widget.wordsSuggestions);
                     if(widget.savedList.length > 0 ) {
                       print("updating from 109");
@@ -141,6 +142,6 @@ class _logInPageState extends State<logInPage> {
                 child:ElevatedButton(
                 child: Text("New user? Click here to sign up"),
                   onPressed: (){
-                    modalScreen(context, password.text, email.text);})))
+                    viewBottomModal(context, password.text, email.text);})))
                 ],),), );}
 }

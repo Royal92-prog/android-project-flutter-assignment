@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
-import 'package:Hw3/loginPage.dart';
-import 'package:Hw3/screens/savedWords.dart';
+import 'package:Hw3/screens/logInScreen.dart';
+import 'package:Hw3/screens/favoritesScreen.dart';
+import 'package:provider/provider.dart';
+
+import '../classes/AuthenticationService.dart';
+import '../classes/modeWrapper.dart';
 
 class homeScreen extends StatefulWidget{
   String? email;
@@ -73,21 +77,22 @@ class _homeScreenState extends State<homeScreen> {
                 title: const Text('Saved Suggestions'),
               ),
               body: savedWords(words : widget.savedWords, wordsList: widget.savedList,
-              wordsSetUpdateFunc:widget.updateFunc, updateFsFunc: widget.updateFsFunc),
+              wordsSetUpdateFunc:widget.updateFunc, updateFsFunc: widget.updateFsFunc,
+              currentUser: widget.email),
           );},),);
   }
 
   void _pushLogin() async{
    await Navigator.push(context,
       MaterialPageRoute(
-        builder:(context) {
+        builder: (context) {
           return Scaffold(
             appBar: AppBar(
               title: const Text('Login'),
               centerTitle: true,
             ),
-            body:logInPage(updateFunc : widget.updateFunc, savedWords : widget.savedWords,
-            wordsSuggestions : widget.wordsSuggestions, savedList: widget.savedList,
+            body: logInScreen(updateFunc: widget.updateFunc, savedWords: widget.savedWords,
+            wordsSuggestions: widget.wordsSuggestions, savedList: widget.savedList,
             updateFsFunc: widget.updateFsFunc,),);
         },),);
 
@@ -113,10 +118,14 @@ class _homeScreenState extends State<homeScreen> {
                   widget.email = null;
                   widget.savedList = [];
                   widget.savedWords = <WordPair>{};
+                  widget.updateFunc(widget.savedList, widget.savedWords, null);
                 });
+                await context.read<AuthenticationService>().signOut();
+                var userEmail = Provider.of<currentUser>(context, listen: false);
+                userEmail.setUser(null);
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text('Successfully logged out'),));
-                widget.updateFunc(widget.savedList,widget.savedWords,widget.wordsSuggestions,widget.email);
+                //widget.updateFunc(widget.savedList,widget.savedWords,widget.wordsSuggestions,widget.email);
                 //Navigator.pop(context);
               },
               tooltip: 'login',

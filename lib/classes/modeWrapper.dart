@@ -1,13 +1,12 @@
-import 'dart:ffi';
 
 import 'package:Hw3/screens/homeScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
-import 'package:Hw3/AuthenticationService.dart';
+import 'package:Hw3/classes/AuthenticationService.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:Hw3/screens/userMode.dart';
+import 'package:Hw3/screens/userScreen.dart';
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -40,9 +39,9 @@ class MyApp extends StatelessWidget {
 }
 
 class currentUser with ChangeNotifier {
-  String? userEmail = null;
+  String? userEmail = null;//'royal@gmail.com'
 
-  void setUser(String val) {
+  void setUser(String? val) {
     userEmail = val;
     notifyListeners();
   }
@@ -53,7 +52,7 @@ class modesWrapper extends StatefulWidget{
   var _wordsSuggestions = <WordPair>[];
   var _savedWords = <WordPair>{};
   var _savedList = [];
-  String? _currentUser = null;
+  //String? _currentUser = null;
 
   @override
   State<modesWrapper> createState() => _modesWrapperState();
@@ -64,15 +63,20 @@ class _modesWrapperState extends State<modesWrapper> {
 
   @override
   Widget build(BuildContext context) {
-    var user = Provider.of<currentUser>(context, listen: true);
+    print('all variables::');
+    print(widget._savedWords);
+    var user = Provider.of<currentUser>(context);
+    print('line 70 ');
+    print(user.userEmail);
     return Container(
         color: Colors.white,
         child: user.userEmail == null
             ? homeScreen(updateFsFunc : updateData, updateFunc : updateVariables,
-            savedWords : widget._savedWords, email : widget._currentUser, wordsSuggestions: widget._wordsSuggestions,
+            savedWords : widget._savedWords, email : null, wordsSuggestions: widget._wordsSuggestions,
             savedList: widget._savedList)
             : userModeScreen(
-              updateFsFunc: updateData, email: user.userEmail.toString(), savedWords: widget._savedWords)
+              updateFsFunc: updateData, email: user.userEmail.toString(), savedWords: widget._savedWords,
+            savedList: widget._savedList, wordsSuggestions: widget._wordsSuggestions,updateFunc: updateVariables,)
 
     );/*
       if(widget._currentUser == null){
@@ -90,6 +94,8 @@ class _modesWrapperState extends State<modesWrapper> {
   }
 
   updateData(email) async{
+    print('line 98 arrived');
+    print(email);
     if(email == null) return;
     FirebaseFirestore _firestore = FirebaseFirestore.instance;
     print("line 95 widget.savedwords is:: ");
@@ -100,11 +106,21 @@ class _modesWrapperState extends State<modesWrapper> {
   }
 
   updateVariables(val1, val2, val3){
-    print('kalimer');
+   /* print('hello updating::');
+    print('val1:');
+    print(val1);
+    print(widget._savedList);*/
+    setState(() {
+      widget._savedList = val1;
+      widget._savedWords = val2;
+      if(val3 != null) widget._wordsSuggestions = val3;
+    });
+    /*
+    print('val2:');
+    print(val2);
+    print(widget._savedWords);
+    */
 
-    widget._savedList = val1;
-    widget._savedWords = val2;
-    widget._wordsSuggestions = val3;
 }
 
 

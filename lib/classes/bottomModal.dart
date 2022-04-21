@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:Hw3/classesManagement.dart';
+import 'package:Hw3/classes/modeWrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:Hw3/AuthenticationService.dart';
+import 'package:Hw3/classes/AuthenticationService.dart';
 
-void modalScreen(BuildContext context, String formPass, String email){
+void viewBottomModal(BuildContext context, String formPass, String email){
   final password = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   showModalBottomSheet<void>(
