@@ -93,7 +93,6 @@ class _logInPageState extends State<logInScreen> {
                     if(cloudWords != null) {
                       widget.savedList = widget.savedList + cloudWords['favorites'];
                     }
-                    //print(widget.savedList);
                     widget.savedList = widget.savedList.toSet().toList();
                     for(int i = 0; i < widget.savedList.length; i++) {
                       String temp = widget.savedList[i].toString();
@@ -105,18 +104,13 @@ class _logInPageState extends State<logInScreen> {
                         widget.savedWords.add(tempWord);
                       }
                     }
-                    print("line 108");
                     widget.updateFunc(widget.savedList,widget.savedWords,widget.wordsSuggestions);
                     if(widget.savedList.length > 0 ) {
-                      print("updating from 109");
                       widget.updateFsFunc(userEmail.userEmail);
                     }
                     Navigator.of(context).pop();
                             // Navigator.pop(context);
                   });
-                  print('Line 114');
-                  print(widget.savedList);
-                  //Navigator.pop(context);
                 }
 
                     else {

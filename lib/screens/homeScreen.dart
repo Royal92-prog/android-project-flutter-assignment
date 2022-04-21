@@ -1,10 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 import 'package:Hw3/screens/logInScreen.dart';
 import 'package:Hw3/screens/favoritesScreen.dart';
 import 'package:provider/provider.dart';
-
 import '../classes/AuthenticationService.dart';
 import '../classes/modeWrapper.dart';
 
@@ -16,9 +14,7 @@ class homeScreen extends StatefulWidget{
   var wordsSuggestions;
   var savedList;
   homeScreen({required this.updateFsFunc, required this.updateFunc, required this.email, required this.savedWords,
-    required this.wordsSuggestions, required this.savedList} ){
-    print("user is:: Line 16 ::   ");
-    print(this.email);}
+    required this.wordsSuggestions, required this.savedList} );
 
   @override
   State<homeScreen> createState() => _homeScreenState();
@@ -95,9 +91,6 @@ class _homeScreenState extends State<homeScreen> {
             wordsSuggestions: widget.wordsSuggestions, savedList: widget.savedList,
             updateFsFunc: widget.updateFsFunc,),);
         },),);
-
-    //Navigator.popAndPushNamed(context,'/modesWrapper');
-    print("line112");
   }
 
   @override

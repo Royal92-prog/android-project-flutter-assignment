@@ -32,8 +32,6 @@ class _savedWordsState extends State<savedWords> {
                 actions: [TextButton(onPressed: () async{
                   setState(() {
                   widget.words.remove(allKept[index]);
-                  print('before');
-                  print(widget.wordsList);
                   widget.wordsList.remove(allKept[index].asSnakeCase);
                   widget.wordsSetUpdateFunc(widget.wordsList,widget.words,null);
                   });
