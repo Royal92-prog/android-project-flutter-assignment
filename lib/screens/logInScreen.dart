@@ -36,7 +36,7 @@ class _logInPageState extends State<logInScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body:Padding(
-        padding: const EdgeInsets.all(30),
+        padding: const EdgeInsets.all(15),
         child : Column(
           children:[SizedBox( height: 20.0, ),
             Text("Welcome to startup Names Generator, please log in below",
@@ -57,7 +57,7 @@ class _logInPageState extends State<logInScreen> {
               border: UnderlineInputBorder(borderSide: BorderSide(style: BorderStyle.solid)),
               labelText:'Email',
               labelStyle: TextStyle(color: Colors.black,)),),
-            SizedBox( height: 15.0,),
+            SizedBox( height: 20.0,),
             TextFormField(
              controller: password,
              obscureText: true,
@@ -109,7 +109,6 @@ class _logInPageState extends State<logInScreen> {
                       widget.updateFsFunc(userEmail.userEmail);
                     }
                     Navigator.of(context).pop();
-                            // Navigator.pop(context);
                   });
                 }
 
@@ -124,9 +123,15 @@ class _logInPageState extends State<logInScreen> {
                     });
               },
               child: Text("Login"),
-              style: ElevatedButton.styleFrom(
+              /*style: ElevatedButton.styleFrom(
               primary: Colors.deepPurple,
-              onPrimary: Colors.white,),),),
+              onPrimary: Colors.white,),*/
+              style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18.0),)),
+                    backgroundColor:MaterialStateProperty.all(Colors.deepPurple)),
+
+              ),),
               shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),),SizedBox( height: 15.0,),
                 ButtonTheme(
                 shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
@@ -134,6 +139,10 @@ class _logInPageState extends State<logInScreen> {
                 width: 330,
                 height: 30,
                 child:ElevatedButton(
+                style: ButtonStyle(
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(18.0),)),
+                backgroundColor:MaterialStateProperty.all(Colors.blue)),
                 child: Text("New user? Click here to sign up"),
                   onPressed: (){
                     viewBottomModal(context, password.text, email.text);})))

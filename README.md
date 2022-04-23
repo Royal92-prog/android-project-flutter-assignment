@@ -1,16 +1,32 @@
-# hello_me2
+# HW3 - dry Part
+Answers:
 
-A new Flutter project.
+1.The classs which is used to implement the controller pattern in this library is
+SnappingSheetController.
+It mainly allows to control the sheet in multiple ways.
+First of all,using the controller one can change the position of the snapping sheet
+using the methods of the class such as: setSnappingSheetPosition,snapToPosition.
 
-## Getting Started
+In addition there exists a possibility of stoping user's current snapping by the method
+stopCurrentSnapping.
 
-This project is a starting point for a Flutter application.
+The Class also allows to extract information from the sheet,using the methods:
+currentPosition,currentSnappingPosition,currentlySnapping,isAttached.
 
-A few resources to get you started if this is your first Flutter project:
+We can conclude that the class provides the developer a very useful tools 
+to update easily the layout on the screen upon changes on the snapping sheet state. 
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+2.snappingPositions is the parameter that controls the mentioned behaviour.
+this parameter takes a list of SnappingPosition instances,which are all the positions
+where the bottom sheet can snap to.
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+3. 
+An advantage of inkWell over GestureDetector:
+GestureDetector doesn't include ripple effect tap, which InkWell does - thus
+for example,in case of demand to display a ripple animation when a button is tapped
+we could use InkWell but not GestureDetector.
+
+An advantage of GestureDetector over inkWell:
+InkWell has a limited number of gestures to detect while GestureDetector class
+is very broad and it covers more types of interactions the user has with the screen.
+

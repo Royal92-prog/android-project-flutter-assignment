@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Hw3/classes/modeWrapper.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,15 +18,17 @@ void viewBottomModal(BuildContext context, String formPass, String email){
         padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Form(
           key: _formKey,
-          child: Container(
+          child: Padding(
+          padding:EdgeInsets.all(15),
+          child:
+          Container(
           padding: EdgeInsets.only(right: 20.0, left: 20.0, top: 40,),
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height/3,
-          child: ListView(
-          children: [
-            Column(
+          child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
+            children: [Text('Please confirm your password below:'),
+              SizedBox(height: 20,),
               TextFormField(
               controller: password,
               obscureText: true,
@@ -66,5 +69,8 @@ void viewBottomModal(BuildContext context, String formPass, String email){
                       elevation: 2.0,
                       padding: EdgeInsets.all(8.0),
                       child: Text('Confirm', style: TextStyle(fontSize: 18.0,),),),),],)
-          ,],),),),);},);
+          ,),)
+
+
+        ),);},);
 }

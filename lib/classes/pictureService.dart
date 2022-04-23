@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:firebase_core/firebase_core.dart' as firebase_core;
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
@@ -14,19 +15,19 @@ class getPicture extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('UsersURL').doc(email).snapshots(),
-      builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot)  {
-        if (snapshot.connectionState == ConnectionState.active){
-          if(snapshot.data!.data() == null){
-            return SizedBox(width: 70);
-          }
-        Map<String, dynamic> currentPicture = snapshot.data!.data() as Map<String, dynamic>;
-    return CircleAvatar(
-      radius: 30,
-      backgroundImage: NetworkImage(currentPicture['address']),
-    );}
-    return Center(child: CircularProgressIndicator());
-    });}
+        stream: FirebaseFirestore.instance.collection('UsersURL').doc(email).snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot)  {
+          if (snapshot.connectionState == ConnectionState.active){
+            if(snapshot.data!.data() == null){
+              return SizedBox(width: 70);
+            }
+            Map<String, dynamic> currentPicture = snapshot.data!.data() as Map<String, dynamic>;
+            return CircleAvatar(
+              radius: 30,
+              backgroundImage: NetworkImage(currentPicture['address']),
+            );}
+          return Center(child: CircularProgressIndicator());
+        });}
 }
 
 class pictureHandler extends StatefulWidget{
@@ -39,14 +40,17 @@ class pictureHandler extends StatefulWidget{
 }
 
 class _pictureState extends State<pictureHandler> {
-
+  bool isPressed = false;
   Widget changeAvatar(){
     return SizedBox(
     width: 140,
     height: 30,
     child: ElevatedButton(
       child: Text('Change avatar',),
-      onPressed: () async {
+      onPressed: isPressed ? null : () async {
+        setState(() {
+          isPressed = true;
+        });
         final result = await FilePicker.platform.pickFiles(
         allowMultiple: false,
         type: FileType.custom,
@@ -62,25 +66,30 @@ class _pictureState extends State<pictureHandler> {
          final firebase_storage.FirebaseStorage storage = firebase_storage.FirebaseStorage.instance;
          final path = result.files.single.path;
          final fileName = result.files.single.name;
+         var doc =  await FirebaseFirestore.instance.collection('UsersURL').doc(widget.email).
+         get().then((querySnapshot) {return querySnapshot.data();});
          File file = File(path!);
+
          try {
           await storage.ref('users/${widget.email}/$fileName').putFile(file);
+          await storage.ref('users/${widget.email}/$fileName').writeToFile(file);
          }
          on firebase_core.FirebaseException catch (e) {
           print(e);
          }
-
-         var doc =  await FirebaseFirestore.instance.collection('UsersURL').doc(widget.email).
-         get().then((querySnapshot) {return querySnapshot.data();});
-
-         if (doc != null){
-          await storage.refFromURL(doc['address']).delete();
-         }
          String returnURL = await storage.ref('users/${widget.email}/$fileName').getDownloadURL();//'files/$fileName'
-         Map<String, dynamic> data = {"address": returnURL};
+         Map<String, dynamic> data = {'address': returnURL, 'fileName' : fileName};
          await FirebaseFirestore.instance.collection('UsersURL').doc(widget.email)
          .set(data,SetOptions(merge : false));
-         }}));
+         if(doc?.isNotEmpty == true && doc!['fileName'] != fileName){
+           await storage.refFromURL(doc['address']).delete();
+         }
+         }
+
+        setState(() {
+          isPressed = false;
+        });
+      }));
    }
 
   @override

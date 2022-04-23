@@ -28,7 +28,7 @@ class _savedWordsState extends State<savedWords> {
             builder: (context) {
               return AlertDialog(
                 title: const Text('Delete Suggestion'),
-                content: Text('are you sure you want to delete ${allKept[index]} from your saved suggestions?'),
+                content: Text('are you sure you want to delete ${allKept[index].asCamelCase} from your saved suggestions?'),
                 actions: [TextButton(onPressed: () async{
                   setState(() {
                   widget.words.remove(allKept[index]);
