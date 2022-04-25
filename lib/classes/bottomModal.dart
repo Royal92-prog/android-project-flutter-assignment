@@ -5,7 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:Hw3/classes/AuthenticationService.dart';
 
-void viewBottomModal(BuildContext context, String formPass, String email){
+void viewBottomModal(BuildContext context, String formPass, String email,Function updateFsFunc){
   final password = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   showModalBottomSheet<void>(
@@ -60,6 +60,7 @@ void viewBottomModal(BuildContext context, String formPass, String email){
                           if (_user != null) {
                             var userEmail = Provider.of<currentUser>(context, listen: false);
                             userEmail.setUser(email);
+                            updateFsFunc(email);
                           }
                           var nav = Navigator.of(context);
                           nav.pop();
