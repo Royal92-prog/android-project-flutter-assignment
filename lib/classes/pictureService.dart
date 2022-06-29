@@ -17,11 +17,11 @@ class getPicture extends StatelessWidget {
     return StreamBuilder<DocumentSnapshot>(
         stream: FirebaseFirestore.instance.collection('UsersURL').doc(email).snapshots(),
         builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot)  {
-          if (snapshot.connectionState == ConnectionState.active){
-            if(snapshot.data!.data() == null){
-              return SizedBox(width: 70);
-            }
+          if (snapshot.connectionState == ConnectionState.active && snapshot.data!.data() != null){
             Map<String, dynamic> currentPicture = snapshot.data!.data() as Map<String, dynamic>;
+            if(currentPicture['address'] == 'none'){
+              return SizedBox();
+            }
             return CircleAvatar(
               radius: 30,
               backgroundImage: NetworkImage(currentPicture['address']),
@@ -77,13 +77,13 @@ class _pictureState extends State<pictureHandler> {
          on firebase_core.FirebaseException catch (e) {
           print(e);
          }
-         String returnURL = await storage.ref('users/${widget.email}/$fileName').getDownloadURL();//'files/$fileName'
+        var returnURL = await storage.ref('users/${widget.email}/$fileName').getDownloadURL();//'files/$fileName'
          Map<String, dynamic> data = {'address': returnURL, 'fileName' : fileName};
          await FirebaseFirestore.instance.collection('UsersURL').doc(widget.email)
-         .set(data,SetOptions(merge : false));
-         if(doc?.isNotEmpty == true && doc!['fileName'] != fileName){
-           await storage.refFromURL(doc['address']).delete();
-         }
+         .set(data,SetOptions(merge : true));
+        /* if(doc?.isNotEmpty == true ){//&& doc!['fileName'] != fileName
+           await storage.refFromURL(doc!['address']).delete();
+         }*/
          }
 
         setState(() {

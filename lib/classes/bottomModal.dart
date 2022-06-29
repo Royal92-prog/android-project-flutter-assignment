@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Hw3/classes/modeWrapper.dart';
@@ -55,7 +56,10 @@ void viewBottomModal(BuildContext context, String formPass, String email){
                       onPressed: () async {
                         if (_formKey.currentState!.validate() != null && _formKey.currentState!.validate() == true) {
                           final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-                          await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password.text);
+                            await _firebaseAuth.createUserWithEmailAndPassword(email: email, password: password.text);
+                          //new line insert
+                          await FirebaseFirestore.instance.collection('UsersURL').doc(email)
+                            .set({'address' : 'none'}, SetOptions(merge: true));
                           User? _user = await context.read<AuthenticationService>().signIn(email: email, password: password.text);
                           if (_user != null) {
                             var userEmail = Provider.of<currentUser>(context, listen: false);
