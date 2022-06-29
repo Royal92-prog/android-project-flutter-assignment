@@ -100,7 +100,7 @@ class _homeScreenState extends State<homeScreen> {
           title: const Text('Startup Name Generator'),
           actions: [
             IconButton(
-              icon: const Icon(Icons.star),
+              icon: const Icon(Icons.list),
               onPressed: _pushFavoritesSc,
               tooltip: 'Saved Suggestions',
             ),

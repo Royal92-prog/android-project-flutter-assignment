@@ -145,6 +145,6 @@ class _logInPageState extends State<logInScreen> {
                 backgroundColor:MaterialStateProperty.all(Colors.blue)),
                 child: Text("New user? Click here to sign up"),
                   onPressed: (){
-                    viewBottomModal(context, password.text, email.text,widget.updateFsFunc );})))
+                    viewBottomModal(context, password.text, email.text);})))
                 ],),), );}
 }
